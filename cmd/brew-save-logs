@@ -1,0 +1,41 @@
+#!/bin/bash
+#
+# brew-save-logs - save the logs from a build
+#
+# brew save-logs <formula>
+#
+
+formula=$1
+if [[ -z "$formula" ]]; then
+  echo >&2 "This command requires a formula argument"
+  exit 1
+fi
+
+
+# Locate and copy the current build log dir
+
+brew_logdir="$HOME/Library/Logs/Homebrew"
+build_logdir="$brew_logdir/$formula"
+if ! [[ -e "$build_logdir" ]]; then
+  echo >&2 "No build log for $formula ($build_logdir does not exist)"
+  exit 1
+fi
+
+saved_log_dir="$brew_logdir/#saved/$formula"
+if ! mkdir -p "$saved_log_dir"; then
+  echo >&2 "Failed creating $saved_log_dir"
+  exit 1
+fi
+timestamp=$(stat -f '%Sm' -t '%F_%H-%M-%S' $build_logdir)
+copy_basename="$formula - $timestamp"
+copy_dir="$saved_log_dir/$copy_basename"
+copy_reldir="#saved/$formula/$copy_basename"
+if [[ -e "$copy_dir" ]]; then
+  echo "Build log is already saved at $copy_reldir"
+  exit 0
+fi
+if ! cp -a "$build_logdir" "$copy_dir"; then
+  echo >&2 "Failed saving log directory"
+  exit 1
+fi
+echo "Saved $formula build log to $copy_reldir"

@@ -2,7 +2,7 @@
 #
 # brew-view-logs - open a build log directory in a viewer program
 #
-# brew-view-logs <formula>
+# brew view-logs <formula>
 #
 # Requires a $HOMEBREW_DIR_VIEWER that can take a directory as an 
 # argument. Sublime Text's subl can do that, and is what I use. Defaults
