@@ -1,0 +1,45 @@
+#!/bin/bash
+#
+# brew-view-logs - open a build log directory in a viewer program
+#
+# brew-view-logs <formula>
+#
+# Requires a $HOMEBREW_DIR_VIEWER that can take a directory as an 
+# argument. Sublime Text's subl can do that, and is what I use. Defaults
+# to subl if it is available.
+#
+# Blocks if $HOMEBREW_DIR_VIEWER blocks.
+#
+# Environment:
+#
+# HOMEBREW_DIR_VIEWER - command for opening a directory in a viewer. May
+#           be a command with options.
+
+formula=$1
+if [[ -z "$formula" ]]; then
+  echo >&2 "This command requires a formula argument"
+  exit 1
+fi
+
+# Choose viewer
+
+viewer=${HOMEBREW_DIR_VIEWER}
+if [[ -z "$viewer" ]]; then
+  if which subl &>/dev/null; then
+  	viewer=subl
+  else
+  	viewer=open
+  fi
+fi
+
+# Open build log dir
+
+brew_logdir="$HOME/Library/Logs/Homebrew"
+build_logdir="$brew_logdir/$formula"
+if [[ -e "$build_logdir" ]]; then
+  $viewer "$build_logdir"
+else
+  echo >&2 "No build log for $formula ($build_logdir does not exist)"
+  exit 1
+fi
+
