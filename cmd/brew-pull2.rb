@@ -359,13 +359,11 @@ module Homebrew
   # Returns info as a hash (type => version), for pull.rb's internal use
   # Uses special key :nonexistent => true for nonexistent formulae
   def current_versions_from_info_external(formula_name)
+    info = FormulaInfoFromJson.lookup(formula_name)
     versions = {}
-    json = Utils.popen_read(HOMEBREW_BREW_FILE, "info", "--json=v1", formula_name)
-    force_utf8!(json)
-    if $?.success?
-      info = Utils::JSON.load(json)
-      [:stable, :devel, :head].each do |vertype|
-        versions[vertype] = info[0]["versions"][vertype.to_s]
+    if info
+      [:stable, :devel, :head].each do |spec_type|
+        versions[spec_type] = info.version(spec_type)
       end
     else
       versions[:nonexistent] = true
@@ -494,6 +492,10 @@ module Homebrew
       tags = bottle_tags
       # Prefer native bottles as a convenience for download caching
       bottle_tags.include?(bottle_tag) ? bottle_tag : bottle_tags.first
+    end
+
+    def version(spec_type)
+      info["versions"][spec_type.to_s]
     end
   end
 
