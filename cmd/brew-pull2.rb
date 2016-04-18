@@ -359,13 +359,11 @@ module Homebrew
   # Returns info as a hash (type => version), for pull.rb's internal use
   # Uses special key :nonexistent => true for nonexistent formulae
   def current_versions_from_info_external(formula_name)
+    info = FormulaInfoFromJson.lookup(formula_name)
     versions = {}
-    json = Utils.popen_read(HOMEBREW_BREW_FILE, "info", "--json=v1", formula_name)
-    force_utf8!(json)
-    if $?.success?
-      info = Utils::JSON.load(json)
-      [:stable, :devel, :head].each do |vertype|
-        versions[vertype] = info[0]["versions"][vertype.to_s]
+    if info
+      [:stable, :devel, :head].each do |spec_type|
+        versions[spec_type] = info.version(spec_type)
       end
     else
       versions[:nonexistent] = true
@@ -495,6 +493,10 @@ module Homebrew
       # Prefer native bottles as a convenience for download caching
       bottle_tags.include?(bottle_tag) ? bottle_tag : bottle_tags.first
     end
+
+    def version(spec_type)
+      info["versions"][spec_type.to_s]
+    end
   end
 
 
@@ -537,7 +539,7 @@ module Homebrew
         # Poll for publication completion using a quick HEAD, to avoid spurious error messages
         # 401 error is normal while file is still in async publishing process
         url = URI(bottle_info.url)
-        puts "Verifying bottle: #{url}"
+        puts "Verifying bottle: #{File.basename(url.path)}"
         Net::HTTP.start(url.host, url.port, :use_ssl => url.scheme == 'https') do |http|
           while true do
             req = Net::HTTP::Head.new url
@@ -549,7 +551,7 @@ module Homebrew
               if retry_count >= max_retries
                 raise "Failed to download #{f} bottle from #{url}!"
               end
-              print(wrote_dots ? "." : "Waiting for bottle file to appear.")
+              print(wrote_dots ? "." : "Waiting on Bintray.")
               wrote_dots = true
               sleep poll_retry_delay_seconds
             else
