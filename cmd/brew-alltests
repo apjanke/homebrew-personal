@@ -1,0 +1,37 @@
+#!/bin/bash
+#
+# brew-alltests - run all tests that should be done before submitting a core PR
+#
+#
+
+FAILED=0
+
+# brew187 - run brew under Ruby 1.8.7
+function brew187() {
+  local ruby187_prefix=$(brew --prefix ruby187 2>/dev/null)
+  if [[ -z "$ruby187_prefix" ]]; then
+    echo >&2 "Error: no ruby187 installation found"
+    return 1
+  fi
+  HOMEBREW_RUBY_PATH="$ruby187_prefix/bin/ruby" brew "$@"
+}
+
+function run_test() {
+  echo Running: "$@"
+  "$@"
+  [[ $? == 0 ]] || FAILED=1
+}
+
+run_test brew tests
+run_test brew readall --syntax
+run_test brew187 tests
+run_test brew187 readall --syntax
+
+if [[ $FAILED != 0 ]]; then
+  echo
+  echo "FAILURE: Some tests failed"
+  exit 1;
+else
+  echo
+  echo "All tests passed"
+fi
