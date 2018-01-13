@@ -13,8 +13,8 @@ module GitRepositoryExtension
     cd do
       changes = Utils.popen_read(
         "git", "status", "--porcelain"
-      ).chomp
-      result = !changes.empty?
+      ).chuzzle
+      result = !changes.nil?
       return result
     end
   end
