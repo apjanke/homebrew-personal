@@ -5,7 +5,6 @@ cask 'intellij-idea-ce' do
   url "https://download.jetbrains.com/idea/ideaIC-#{version}.dmg"
   name 'IntelliJ IDEA Community Edition'
   homepage 'https://www.jetbrains.com/idea/'
-  license :commercial
 
   conflicts_with cask: 'intellij-idea'
 

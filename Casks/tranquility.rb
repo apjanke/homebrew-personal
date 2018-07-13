@@ -5,7 +5,6 @@ cask 'tranquility' do
   url "https://github.com/lswank/Tranquility/releases/download/#{version}/Tranquility.app.zip"
   name "Tranquility"
   homepage "https://github.com/lswank/Tranquility"
-  license :oss
 
   app "Tranquility.app"
 end
