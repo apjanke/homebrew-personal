@@ -15,9 +15,6 @@ class AsciidocPy3 < Formula
 
     system "autoconf"
     system "./configure", "--prefix=#{prefix}"
-
-    # otherwise macOS's xmllint bails out
-    inreplace "Makefile", "-f manpage", "-f manpage -L"
     system "make", "install"
     system "make", "docs"
   end
