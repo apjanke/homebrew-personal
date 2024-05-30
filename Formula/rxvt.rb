@@ -4,11 +4,6 @@ class Rxvt < Formula
   url "https://downloads.sourceforge.net/project/rxvt/rxvt/2.6.4/rxvt-2.6.4.tar.gz"
   sha256 "af0b90bb4d563aafeabcb4c237bd66668740743531e025a70d61a32d214f2242"
 
-  devel do
-    url "https://downloads.sourceforge.net/project/rxvt/rxvt-dev/2.7.10/rxvt-2.7.10.tar.gz"
-    sha256 "616ad56502820264e6933d07bc4eb752aa6940ec14add6e780ffccf15f38d449"
-  end
-
   depends_on :x11
 
   def install
